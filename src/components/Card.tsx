@@ -1,11 +1,4 @@
-import {
-  Box,
-  Heading,
-  Text,
-  Image,
-  Skeleton,
-  SkeletonText,
-} from '@chakra-ui/react';
+import { Box, Heading, Text, Image, Skeleton, SkeletonText } from '@chakra-ui/react';
 import { useState } from 'react';
 
 interface Card {
@@ -24,19 +17,9 @@ export function Card({ data, viewImage }: CardProps): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <Box key={data.ts} borderRadius="md" bgColor="pGray.800">
+    <Box borderRadius="md" bgColor="pGray.800">
       <Skeleton isLoaded={!isLoading}>
-        <Image
-          src={data.url}
-          alt={data.title}
-          objectFit="cover"
-          w="max"
-          h={48}
-          borderTopRadius="md"
-          onClick={() => viewImage(data.url)}
-          onLoad={() => setIsLoading(false)}
-          cursor="pointer"
-        />
+        <Image src={`${data.url}`} alt={data.title} objectFit="cover" w="100%" h={48} borderTopRadius="md" onClick={() => viewImage(data.url)} onLoad={() => setIsLoading(false)} cursor="pointer" />
       </Skeleton>
 
       <Box pt={5} pb={4} px={6}>

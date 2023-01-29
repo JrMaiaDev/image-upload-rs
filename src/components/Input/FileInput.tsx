@@ -1,79 +1,37 @@
-import {
-  Box,
-  FormLabel,
-  CircularProgress,
-  CircularProgressLabel,
-  Icon,
-  Image,
-  Text,
-  FormControl,
-  FormErrorMessage,
-  Flex,
-  useToast,
-  Tooltip,
-} from '@chakra-ui/react';
+/* eslint-disable prettier/prettier */
+import { Box, FormLabel, CircularProgress, CircularProgressLabel, Icon, Image, Text, FormControl, FormErrorMessage, Flex, useToast, Tooltip } from '@chakra-ui/react';
+
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
-import {
-  useState,
-  SetStateAction,
-  Dispatch,
-  ForwardRefRenderFunction,
-  forwardRef,
-  useCallback,
-  useEffect,
-} from 'react';
-import {
-  FieldError,
-  FieldValues,
-  UseFormSetError,
-  UseFormTrigger,
-} from 'react-hook-form';
+
+import { useState, SetStateAction, Dispatch, ForwardRefRenderFunction, forwardRef, useCallback, useEffect } from 'react';
+
+import { FieldErrors, FieldValues, UseFormSetError, UseFormTrigger } from 'react-hook-form';
+
 import { FiAlertCircle, FiPlus } from 'react-icons/fi';
+
 import { api } from '../../services/api';
 
 export interface FileInputProps {
   name: string;
-  error?: FieldError;
+  error?: FieldErrors;
   setImageUrl: Dispatch<SetStateAction<string>>;
   localImageUrl: string;
   setLocalImageUrl: Dispatch<SetStateAction<string>>;
   setError: UseFormSetError<FieldValues>;
-  onChange: (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => Promise<boolean | void>;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => Promise<boolean | void>;
   trigger: UseFormTrigger<FieldValues>;
 }
 
-const FileInputBase: ForwardRefRenderFunction<
-  HTMLInputElement,
-  FileInputProps
-> = (
-  {
-    name,
-    error = null,
-    setImageUrl,
-    localImageUrl,
-    setLocalImageUrl,
-    setError,
-    onChange,
-    trigger,
-    ...rest
-  },
-  ref
-) => {
+const FileInputBase: ForwardRefRenderFunction<HTMLInputElement, FileInputProps> = ({ name, error = null, setImageUrl, localImageUrl, setLocalImageUrl, setError, onChange, trigger, ...rest }, ref) => {
   const toast = useToast();
   const [progress, setProgress] = useState(0);
   const [isSending, setIsSending] = useState(false);
-  const [cancelToken, setCancelToken] = useState<CancelTokenSource>(
-    {} as CancelTokenSource
-  );
-
+  const [cancelToken, setCancelToken] = useState<CancelTokenSource>({} as CancelTokenSource);
   const handleImageUpload = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
       if (!event.target.files?.length) {
         return;
       }
-
       setImageUrl('');
       setLocalImageUrl('');
       setError('image', null);
@@ -100,11 +58,7 @@ const FileInputBase: ForwardRefRenderFunction<
       } as AxiosRequestConfig;
 
       try {
-        const response = await api.post(
-          'https://api.imgbb.com/1/upload',
-          formData,
-          config
-        );
+        const response = await api.post('https://api.imgbb.com/1/upload', formData, config);
 
         setImageUrl(response.data.data.url);
         setLocalImageUrl(URL.createObjectURL(event.target.files[0]));
@@ -127,51 +81,34 @@ const FileInputBase: ForwardRefRenderFunction<
   );
 
   useEffect(() => {
-    if (error?.message && isSending && cancelToken?.cancel) {
+    if (Object.keys(error).length > 0 && isSending && cancelToken?.cancel) {
       cancelToken.cancel('Cancelled image upload.');
       setCancelToken(null);
     }
   }, [cancelToken, error, isSending]);
 
   return (
-    <FormControl isInvalid={!!error}>
-      <FormLabel
-        mx="auto"
-        w={40}
-        h={40}
-        htmlFor={name}
-        cursor={isSending ? 'progress' : 'pointer'}
-        opacity={isSending ? 0.5 : 1}
-      >
+    <FormControl isInvalid={Object.keys(error).length > 0}>
+      <FormLabel mx="auto" w={40} h={40} htmlFor={name} cursor={isSending ? 'progress' : 'pointer'} opacity={isSending ? 0.5 : 1}>
         {localImageUrl && !isSending ? (
-          <Image
-            w="full"
-            h="full"
-            src={localImageUrl}
-            alt="Uploaded photo"
-            borderRadius="md"
-            objectFit="cover"
-          />
+          <Image w="full" h="full" src={localImageUrl} alt="Uploaded photo" borderRadius="md" objectFit="cover" />
         ) : (
           <Flex
             w="full"
             h="full"
+            id="div que é renderizada quando abre o modal de imagem"
             flexDir="column"
             justifyContent="center"
             alignItems="center"
             borderRadius="md"
             bgColor="pGray.800"
             color="pGray.200"
-            borderWidth={error?.message && 2}
-            borderColor={error?.message && 'red.500'}
+            borderWidth={Object.keys(error).length > 0 && 2}
+            borderColor={Object.keys(error).length > 0 && 'red.500'}
           >
             {isSending ? (
               <>
-                <CircularProgress
-                  trackColor="pGray.200"
-                  value={progress}
-                  color="orange.500"
-                >
+                <CircularProgress trackColor="pGray.200" value={progress} color="orange.500">
                   <CircularProgressLabel>{progress}%</CircularProgressLabel>
                 </CircularProgress>
                 <Text as="span" pt={2} textAlign="center">
@@ -179,27 +116,16 @@ const FileInputBase: ForwardRefRenderFunction<
                 </Text>
               </>
             ) : (
-              <Box pos="relative" h="full">
-                {!!error && (
-                  <Tooltip label={error.message} bg="red.500">
-                    <FormErrorMessage
-                      pos="absolute"
-                      right={2}
-                      top={2}
-                      mt={0}
-                      zIndex="tooltip"
-                    >
+              <Box pos="relative" h="full" id="myclassID" className="myclass">
+                {Object.keys(error).length > 0 && (
+                  <Tooltip label={error?.image.message} bg="red.500">
+                    <FormErrorMessage pos="absolute" right={2} top={2} mt={0} zIndex="tooltip">
                       <Icon as={FiAlertCircle} color="red.500" w={4} h={4} />
                     </FormErrorMessage>
                   </Tooltip>
                 )}
 
-                <Flex
-                  h="full"
-                  alignItems="center"
-                  justifyContent="center"
-                  flexDir="column"
-                >
+                <Flex h="full" alignItems="center" justifyContent="center" flexDir="column">
                   <Icon as={FiPlus} w={14} h={14} />
                   <Text as="span" pt={2} textAlign="center">
                     Adicione sua imagem
