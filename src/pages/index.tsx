@@ -11,8 +11,13 @@ import { Error } from '../components/Error';
 export default function Home(): JSX.Element {
   const { data, isLoading, isError, isFetchingNextPage, fetchNextPage, hasNextPage } = useInfiniteQuery(
     'images',
-    async ({ pageParam = null }) => {
-      const response = await api.get(`/api/images?after=${pageParam}`);
+    async ({ pageParam = 0 }) => {
+      const response = await api.get('/api/images', {
+        params: {
+          after: pageParam,
+        },
+      });
+
       return response.data;
     },
     {
@@ -46,8 +51,8 @@ export default function Home(): JSX.Element {
       <Box maxW={1120} px={20} mx="auto" my={20}>
         <CardList cards={formattedData} />
         {hasNextPage && (
-          <Button display="block" marginTop={10} onClick={() => fetchNextPage()}>
-            {isFetchingNextPage ? 'Carregando...' : 'Carregar Mais'}
+          <Button display="block" type="button" marginTop={10} onClick={() => fetchNextPage()}>
+            {isFetchingNextPage ? 'Carregando...' : 'Carregar mais'}
           </Button>
         )}
       </Box>

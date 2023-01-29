@@ -203,7 +203,7 @@ describe('Home page', () => {
     expect(await screen.findByText('The best friend')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Danilo' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Danilo' })).toBeInTheDocument();
-
+    console.log(screen)
     const loadMoreButton = await screen.findByRole('button', {
       name: 'Carregar mais',
     });
